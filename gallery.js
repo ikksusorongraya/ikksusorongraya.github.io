@@ -160,6 +160,8 @@ async function createAlbumCard(album) {
 
   const card = document.createElement('div');
   card.className = 'album-card reveal';
+  const albumId = `album-${album.id}`;
+  card.id = albumId;
 
   const dateLabel = album.date ? formatDate(album.date) : '';
   const hasHighlights = album.highlights && album.highlights.length > 0;
@@ -181,7 +183,13 @@ async function createAlbumCard(album) {
       <div class="album-header">
         <div class="album-title-row">
           <h3>${albumName}</h3>
-          ${dateLabel ? `<span class="album-date">${dateLabel}</span>` : ''}
+          <div class="album-header-actions">
+            ${dateLabel ? `<span class="album-date">${dateLabel}</span>` : ''}
+            <a href="#${albumId}" class="album-anchor" title="Salin tautan album">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="anchor-tooltip">Salin tautan</span>
+            </a>
+          </div>
         </div>
         ${albumDesc ? `<p class="album-desc">${albumDesc}</p>` : ''}
       </div>
@@ -206,7 +214,37 @@ async function createAlbumCard(album) {
     });
   }
 
+  const anchor = card.querySelector('.album-anchor');
+  if (anchor) {
+    anchor.addEventListener('click', (e) => {
+      e.preventDefault();
+      const url = `${window.location.href.split('#')[0]}#${albumId}`;
+      navigator.clipboard.writeText(url).then(() => {
+        anchor.classList.add('copied');
+        const tip = anchor.querySelector('.anchor-tooltip');
+        if (tip) tip.textContent = 'Tersalin!';
+        setTimeout(() => {
+          anchor.classList.remove('copied');
+          if (tip) tip.textContent = 'Salin tautan';
+        }, 1500);
+      });
+    });
+  }
+
   return card;
 }
 
-document.addEventListener('DOMContentLoaded', loadGallery);
+async function scrollToAlbum() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#album-')) return;
+  const el = document.getElementById(hash.slice(1));
+  if (el) {
+    await new Promise(r => setTimeout(r, 500));
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadGallery().then(scrollToAlbum);
+  window.addEventListener('hashchange', scrollToAlbum);
+});

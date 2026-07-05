@@ -889,6 +889,65 @@ h1, h2, h3, h4, h5, h6 {
   flex-shrink: 0;
 }
 
+.album-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.album-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.album-anchor:hover {
+  background: rgba(107, 15, 26, 0.06);
+  color: var(--batak-maroon);
+}
+
+.album-anchor.copied {
+  color: #2e7d32;
+  background: rgba(46, 125, 50, 0.08);
+}
+
+.album-anchor svg {
+  display: block;
+}
+
+.anchor-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--deep-black);
+  color: var(--pure-white);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.album-anchor:hover .anchor-tooltip,
+.album-anchor.copied .anchor-tooltip {
+  opacity: 1;
+}
+
+.album-anchor.copied .anchor-tooltip {
+  content: 'Tersalin!';
+}
+
 .album-desc {
   font-size: 0.9rem;
   color: var(--text-secondary);
